@@ -1,10 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 
+type FlexDirection = "row" | "row-reverse" | "column" | "column-reverse";
+
 const baseStyle = {
   flex: 1,
   display: "flex",
-  flexDirection: "column",
+  flexDirection: "column" as FlexDirection,
   alignItems: "center",
   padding: "30px 10px 50px 10px",
   borderWidth: 2,
@@ -35,7 +37,7 @@ export default function FileUpload({
   removeFiles,
 }: {
   addFiles: (files: File[]) => void;
-  value: File;
+  value: File[];
   removeFiles: () => void;
 }) {
   const [errors, setErrors] = useState("");
