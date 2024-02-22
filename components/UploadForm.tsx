@@ -6,7 +6,7 @@ import { useInput } from "@/hooks/useInput";
 import { useEffect } from "react";
 
 export default function UploadForm() {
-  const files = useFiles("");
+  const files = useFiles([]);
   const kohaNumber = useInput();
   const kohaBiblio = useInput();
   const filename = useInput();
