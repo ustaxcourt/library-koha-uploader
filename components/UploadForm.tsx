@@ -12,10 +12,11 @@ export default function UploadForm() {
   const filename = useInput();
 
   useEffect(() => {
+    const uploadedFilename = files.value.length > 0 ? files.value[0].name : "";
     const newFilename = [
       kohaNumber.value,
       kohaBiblio.value,
-      files.value[0].name,
+      uploadedFilename,
     ].join("-");
     filename.setValue(newFilename);
 
