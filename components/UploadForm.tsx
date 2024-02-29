@@ -9,6 +9,7 @@ export default function UploadForm() {
   const files = useFiles([]);
   const kohaNumber = useInput();
   const [filename, setFilename] = useState("");
+  const [foldername, setFoldername] = useState("");
 
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
@@ -24,6 +25,7 @@ export default function UploadForm() {
         ? ["koha", kohaNumber.value, fixedFilename].join("-")
         : "";
     setFilename(newFilename);
+    setFoldername(newFilename.split(".")[0]);
   }, [files.value, kohaNumber.value]);
 
   return (
@@ -37,12 +39,23 @@ export default function UploadForm() {
         <input className="text-slate-800 p-2" type="text" {...kohaNumber} />
       </div>
       <div className="flex flex-col gap-2">
+        <label>Folder Name</label>
+        <input
+          className="text-slate-800 p-2 max-w-5xl w-full"
+          type="text"
+          defaultValue={foldername}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
         <label>Filename</label>
         <input
           className="text-slate-800 p-2 max-w-5xl w-full"
           type="text"
           defaultValue={filename}
         />
+      </div>
+      <div className="flex flex-col gap-2">
+        <button>Upload</button>
       </div>
     </div>
   );
