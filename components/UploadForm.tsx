@@ -3,12 +3,12 @@
 import FileUpload from "@/components/FileUpload";
 import { useFiles } from "@/hooks/useFiles";
 import { useInput } from "@/hooks/useInput";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function UploadForm() {
   const files = useFiles([]);
   const kohaNumber = useInput();
-  const filename = useInput();
+  const [filename, setFilename] = useState("");
 
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
@@ -23,11 +23,11 @@ export default function UploadForm() {
       kohaNumber.value && uploadedFilename
         ? [kohaNumber.value, fixedFilename].join("-")
         : "";
-    filename.setValue(newFilename);
+    setFilename(newFilename);
 
     console.log("hello");
     console.log(files.value);
-  }, [files.value, kohaNumber.value, filename]);
+  }, [files.value, kohaNumber.value]);
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -43,7 +43,7 @@ export default function UploadForm() {
         <input
           className="text-slate-800 p-2 max-w-5xl w-full"
           type="text"
-          value={filename.value}
+          defaultValue={filename}
         />
       </div>
     </div>
