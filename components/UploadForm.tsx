@@ -8,11 +8,6 @@ import { Providers } from "@microsoft/mgt-element";
 import { Msal2Provider } from "@microsoft/mgt-msal2-provider";
 import { Login } from "@microsoft/mgt-react";
 
-Providers.globalProvider = new Msal2Provider({
-  clientId: "32d17869-730b-451d-9812-73b95baa36c1",
-  authority:
-    "https://login.microsoftonline.com/bc33f47d-2f1f-427d-8ac2-3aeba8ab0ebd",
-});
 
 export default function UploadForm() {
   const files = useFiles([]);
@@ -30,7 +25,6 @@ export default function UploadForm() {
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
     const newBasename = basename.replace(/-\d+$/, "");
-    console.log("fixFilename", { basename, newBasename });
     return [newBasename, extension].join(".");
   };
 
@@ -49,12 +43,10 @@ export default function UploadForm() {
   };
 
   useEffect(() => {
-    console.log("fix my filename");
     const uploadedFilename = files.value.length > 0 ? files.value[0].name : "";
     const fixedFilename = fixFilename(uploadedFilename);
     const newFilename = ["koha", kohaBiblio.value, fixedFilename].join("-");
     filename.setValue(newFilename);
-    console.log(files.value);
   }, [files.value, kohaBiblio.value, filename]);
   return (
     <div>
@@ -79,7 +71,7 @@ export default function UploadForm() {
               <input
                 className="text-slate-800 p-2 max-w-5xl w-full"
                 type="text"
-                {...filename}
+                value={filename.value}
               />
             </div>
           </div>
