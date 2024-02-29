@@ -21,13 +21,11 @@ export default function UploadForm() {
     const fixedFilename = fixFilename(uploadedFilename);
     const newFilename =
       kohaNumber.value && uploadedFilename
-        ? [kohaNumber.value, fixedFilename].join("-")
+        ? ["koha", kohaNumber.value, fixedFilename].join("-")
         : "";
     setFilename(newFilename);
-
-    console.log("hello");
-    console.log(files.value);
   }, [files.value, kohaNumber.value]);
+
   return (
     <div className="flex flex-col gap-6">
       <div>
