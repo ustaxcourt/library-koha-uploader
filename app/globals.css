@@ -38,6 +38,10 @@ body {
 .btn-blue {
   @apply bg-blue-500 text-white;
 }
+
+.btn-disabled {
+  @apply opacity-45 bg-blue-500 text-white;
+}
 .btn-blue:hover {
   @apply bg-blue-700;
 }
