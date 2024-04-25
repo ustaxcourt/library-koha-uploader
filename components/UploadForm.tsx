@@ -46,7 +46,7 @@ const UploadForm = () => {
   const uploadFile = () => {
     console.log("upload file clicked");
     initUpload(async () => {
-      const url = await startUpload({ filename: filename });
+      const url = await startUpload({ filename: `${foldername}/${filename}` });
 
       await fetch(url, {
         method: "PUT",
@@ -89,7 +89,8 @@ const UploadForm = () => {
           <input
             className="text-slate-800 p-2 max-w-5xl w-full"
             type="text"
-            defaultValue={foldername}
+            value={foldername}
+            readOnly
           />
         </div>
         <div className="flex flex-col gap-2">
