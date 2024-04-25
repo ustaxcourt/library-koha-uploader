@@ -3,8 +3,9 @@
 import FileUpload from "@/components/FileUpload";
 import { useFiles } from "@/hooks/useFiles";
 import { useInput } from "@/hooks/useInput";
-import { useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
+import { startUpload } from "@/app/actions";
 
 export default function Component() {
   const { data: session } = useSession();
@@ -17,9 +18,10 @@ export default function Component() {
 
   return (
     <div>
-      {session?.user && session?.user?.name === "Michael Marcotte" ? (
+      {session?.user?.email &&
+      usersWhoCanLogin.includes(session.user.email.toLowerCase()) ? (
         <div>
-          <UploadForm2 />
+          <UploadForm />
         </div>
       ) : (
         <div>They are not logged in</div>
@@ -28,10 +30,13 @@ export default function Component() {
   );
 }
 
-const UploadForm2 = () => {
+const UploadForm = () => {
+  const [uploadStarted, initUpload] = useTransition();
   const files = useFiles([]);
   const kohaBiblio = useInput();
-  const filename = useInput();
+  const [filename, setFilename] = useState("");
+  const [isUploadComplete, setIsUploadComplete] = useState(false);
+  const [isDisabled, setDisabled] = useState(true);
 
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
@@ -39,12 +44,32 @@ const UploadForm2 = () => {
     return [newBasename, extension].join(".");
   };
 
+  const uploadFile = () => {
+    console.log("upload file clicked");
+    initUpload(async () => {
+      const url = await startUpload({ filename: filename });
+
+      await fetch(url, {
+        method: "PUT",
+        mode: "cors",
+        body: files.value[0],
+      });
+
+      setIsUploadComplete(true);
+    });
+  };
+
   useEffect(() => {
+    if (files.value.length === 0 || !kohaBiblio.value) {
+      setDisabled(true);
+      return;
+    }
     const uploadedFilename = files.value.length > 0 ? files.value[0].name : "";
     const fixedFilename = fixFilename(uploadedFilename);
     const newFilename = ["koha", kohaBiblio.value, fixedFilename].join("-");
-    filename.setValue(newFilename);
-  }, [files.value, kohaBiblio.value, filename]);
+    setFilename(newFilename);
+    setDisabled(false);
+  }, [files.value, kohaBiblio.value]);
 
   return (
     <div>
@@ -60,15 +85,46 @@ const UploadForm2 = () => {
         <div className="flex flex-col gap-2">
           <label>Filename</label>
           <input
-            className="text-slate-800 p-2 max-w-5xl w-full"
+            className={`text-slate-800 p-2 max-w-5xl w-full`}
             type="text"
-            value={filename.value}
+            readOnly
+            disabled={isDisabled}
+            value={filename}
           />
         </div>
         <div>
-          <button className="btn btn-blue">Upload</button>
+          {isUploadComplete ? (
+            <div
+              className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+              role="alert"
+            >
+              <span className="font-medium">Upload complete!</span>
+            </div>
+          ) : (
+            <Upload isDisabled={isDisabled} onClick={uploadFile} />
+          )}
         </div>
       </div>
     </div>
+  );
+};
+
+const Upload = ({
+  isDisabled,
+  onClick,
+}: {
+  isDisabled: boolean;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+}) => {
+  return (
+    <button
+      className={`btn  cursor-pointer ${
+        isDisabled ? "btn-disabled" : "btn-blue"
+      }`}
+      disabled={isDisabled}
+      onClick={onClick}
+    >
+      Upload
+    </button>
   );
 };
