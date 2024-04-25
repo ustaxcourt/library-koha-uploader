@@ -7,7 +7,6 @@ export default function Component() {
   const { data: session } = useSession();
 
   if (session && session.user) {
-    console.log(session);
     return (
       <>
         <span>Signed in as</span>

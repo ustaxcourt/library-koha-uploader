@@ -6,7 +6,6 @@ import { useInput } from "@/hooks/useInput";
 import { MouseEventHandler, useEffect, useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { startUpload } from "@/app/actions";
-
 export default function Component() {
   const { data: session } = useSession();
 
@@ -31,13 +30,13 @@ export default function Component() {
 }
 
 const UploadForm = () => {
+  const kohaNumber = useInput();
+  const [foldername, setFoldername] = useState("");
   const [uploadStarted, initUpload] = useTransition();
   const files = useFiles([]);
-  const kohaBiblio = useInput();
   const [filename, setFilename] = useState("");
   const [isUploadComplete, setIsUploadComplete] = useState(false);
   const [isDisabled, setDisabled] = useState(true);
-
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
     const newBasename = basename.replace(/-\d+$/, "");
@@ -60,16 +59,19 @@ const UploadForm = () => {
   };
 
   useEffect(() => {
-    if (files.value.length === 0 || !kohaBiblio.value) {
+    if (files.value.length === 0 || !kohaNumber.value) {
       setDisabled(true);
       return;
     }
+
+    setDisabled(false);
+
     const uploadedFilename = files.value.length > 0 ? files.value[0].name : "";
     const fixedFilename = fixFilename(uploadedFilename);
-    const newFilename = ["koha", kohaBiblio.value, fixedFilename].join("-");
+    const newFilename = ["koha", kohaNumber.value, fixedFilename].join("-");
     setFilename(newFilename);
-    setDisabled(false);
-  }, [files.value, kohaBiblio.value]);
+    setFoldername(newFilename.split(".")[0]);
+  }, [files.value, kohaNumber.value]);
 
   return (
     <div>
@@ -79,8 +81,16 @@ const UploadForm = () => {
           <FileUpload {...files} />
         </div>
         <div className="flex flex-col gap-2">
-          <label>KOHA Biblio</label>
-          <input className="text-slate-800 p-2" type="text" {...kohaBiblio} />
+          <label>KOHA Number</label>
+          <input className="text-slate-800 p-2" type="text" {...kohaNumber} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <label>Folder Name</label>
+          <input
+            className="text-slate-800 p-2 max-w-5xl w-full"
+            type="text"
+            defaultValue={foldername}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <label>Filename</label>
@@ -101,7 +111,10 @@ const UploadForm = () => {
               <span className="font-medium">Upload complete!</span>
             </div>
           ) : (
-            <Upload isDisabled={isDisabled} onClick={uploadFile} />
+            <Upload
+              isDisabled={uploadStarted || isDisabled}
+              onClick={uploadFile}
+            />
           )}
         </div>
       </div>
@@ -118,8 +131,10 @@ const Upload = ({
 }) => {
   return (
     <button
-      className={`btn  cursor-pointer ${
-        isDisabled ? "btn-disabled" : "btn-blue"
+      className={`btn ${
+        isDisabled
+          ? "btn-disabled cursor-not-allowed"
+          : "btn-blue cursor-pointer"
       }`}
       disabled={isDisabled}
       onClick={onClick}

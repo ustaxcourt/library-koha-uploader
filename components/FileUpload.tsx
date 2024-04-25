@@ -43,7 +43,6 @@ export default function FileUpload({
   const [errors, setErrors] = useState("");
   const [selectedFiles, setSelectedFiles] = useState(value);
   useEffect(() => {
-    console.log(value);
     setSelectedFiles(value);
   }, [value]);
 
