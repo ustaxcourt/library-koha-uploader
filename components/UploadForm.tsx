@@ -22,8 +22,10 @@ export default function Component() {
         <div>
           <UploadForm />
         </div>
+      ) : session?.user?.email ? (
+        <div>This user does not have access to this application</div>
       ) : (
-        <div>They are not logged in</div>
+        <div></div>
       )}
     </div>
   );
