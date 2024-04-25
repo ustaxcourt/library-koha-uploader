@@ -92,6 +92,7 @@ const UploadForm = () => {
             className="text-slate-800 p-2 max-w-5xl w-full"
             type="text"
             value={foldername}
+            disabled={isDisabled}
             readOnly
           />
         </div>
