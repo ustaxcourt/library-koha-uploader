@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.556.0",
+    "@aws-sdk/s3-request-presigner": "^3.556.0",
     "@microsoft/mgt-element": "^4.1.0",
     "@microsoft/mgt-msal2-provider": "^4.1.0",
     "@microsoft/mgt-react": "^4.1.0",
