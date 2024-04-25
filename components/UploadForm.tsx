@@ -46,7 +46,7 @@ const UploadForm = () => {
   const uploadFile = () => {
     console.log("upload file clicked");
     initUpload(async () => {
-      const url = await startUpload({ filename: filename });
+      const url = await startUpload({ filename: `${foldername}/${filename}` });
 
       await fetch(url, {
         method: "PUT",
