@@ -8,5 +8,6 @@ declare namespace NodeJS {
     S3_UPLOADS_BUCKET: string;
     S3_ACCESS_KEY: string;
     S3_SECRET_KEY: string;
+    NEXT_PUBLIC_S3_URL_PREFIX: string;
   }
 }

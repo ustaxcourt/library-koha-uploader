@@ -39,6 +39,8 @@ const UploadForm = () => {
   const [filename, setFilename] = useState("");
   const [isUploadComplete, setIsUploadComplete] = useState(false);
   const [isDisabled, setDisabled] = useState(true);
+  const [url, setUrl] = useState("");
+
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
     const newBasename = basename.replace(/-\d+$/, "");
@@ -75,6 +77,18 @@ const UploadForm = () => {
     setFoldername(newFilename.split(".")[0]);
   }, [files.value, kohaNumber.value]);
 
+  useEffect(() => {
+    setUrl(
+      `${process.env.NEXT_PUBLIC_S3_URL_PREFIX}/${foldername}/${filename}`
+    );
+  }, [filename, foldername]);
+
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-6">
@@ -108,11 +122,27 @@ const UploadForm = () => {
         </div>
         <div>
           {isUploadComplete ? (
-            <div
-              className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
-              role="alert"
-            >
-              <span className="font-medium">Upload complete!</span>
+            <div className="flex flex-col space-y-5">
+              <div
+                className="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
+                role="alert"
+              >
+                <span className="font-medium">Upload complete!</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label>URL</label>
+                <input
+                  className={`text-slate-800 p-2 max-w-5xl w-full`}
+                  type="text"
+                  readOnly
+                  value={url}
+                />
+                <div>
+                  <button onClick={handleCopy} className="btn btn-blue">
+                    {copied ? "copied!" : "copy"}
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <Upload
