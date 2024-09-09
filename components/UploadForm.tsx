@@ -6,6 +6,8 @@ import { useInput } from "@/hooks/useInput";
 import { MouseEventHandler, useEffect, useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { startUpload } from "@/app/actions";
+import { DocType } from "@/types/DocType";
+
 export default function Component() {
   const { data: session } = useSession();
 
@@ -18,7 +20,7 @@ export default function Component() {
   return (
     <div>
       {session?.user?.email &&
-      usersWhoCanLogin.includes(session.user.email.toLowerCase()) ? (
+        usersWhoCanLogin.includes(session.user.email.toLowerCase()) ? (
         <div>
           <UploadForm />
         </div>
@@ -40,6 +42,7 @@ const UploadForm = () => {
   const [isUploadComplete, setIsUploadComplete] = useState(false);
   const [isDisabled, setDisabled] = useState(true);
   const [url, setUrl] = useState("");
+  const [docType, setDocType] = useState<DocType>("JCT");
 
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
@@ -48,9 +51,9 @@ const UploadForm = () => {
   };
 
   const uploadFile = () => {
-    console.log("upload file clicked");
     initUpload(async () => {
-      const url = await startUpload({ filename: `${foldername}/${filename}` });
+
+      const url = await startUpload({ docType, filename, folderName: foldername });
 
       await fetch(url, {
         method: "PUT",
@@ -78,8 +81,12 @@ const UploadForm = () => {
   }, [files.value, kohaNumber.value]);
 
   useEffect(() => {
+    const docUrl = docType === "JCT" ?
+      `${process.env.NEXT_PUBLIC_S3_JCT_URL_PREFIX}/${foldername}/${filename}`
+      : `${process.env.NEXT_PUBLIC_S3_HEARINGS_URL_PREFIX}/${filename}`
+
     setUrl(
-      `${process.env.NEXT_PUBLIC_S3_URL_PREFIX}/${foldername}/${filename}`
+      docUrl
     );
   }, [filename, foldername]);
 
@@ -101,15 +108,31 @@ const UploadForm = () => {
           <input className="text-slate-800 p-2" type="text" {...kohaNumber} />
         </div>
         <div className="flex flex-col gap-2">
-          <label>Folder Name</label>
-          <input
-            className="text-slate-800 p-2 max-w-5xl w-full"
-            type="text"
-            value={foldername}
-            disabled={isDisabled}
-            readOnly
-          />
+          <label>Type</label>
+          <div className="flex flex-row gap-2">
+            <button className={`btn ${docType === "JCT" ? "btn-blue" : "btn-disabled"}`} onClick={() => setDocType("JCT")}>
+              JCT
+            </button>
+            <button
+              className={`btn ${docType === "Hearing" ? "btn-blue" : "btn-disabled"}`}
+              onClick={() => setDocType("Hearing")}
+            >
+              Hearings
+            </button>
+          </div>
         </div>
+        {docType === "JCT" && (
+          <div className="flex flex-col gap-2">
+            <label>Folder Name</label>
+            <input
+              className="text-slate-800 p-2 max-w-5xl w-full"
+              type="text"
+              value={foldername}
+              disabled={isDisabled}
+              readOnly
+            />
+          </div>
+        )}
         <div className="flex flex-col gap-2">
           <label>Filename</label>
           <input
@@ -165,11 +188,10 @@ const Upload = ({
 }) => {
   return (
     <button
-      className={`btn ${
-        isDisabled
-          ? "btn-disabled cursor-not-allowed"
-          : "btn-blue cursor-pointer"
-      }`}
+      className={`btn ${isDisabled
+        ? "btn-disabled cursor-not-allowed"
+        : "btn-blue cursor-pointer"
+        }`}
       disabled={isDisabled}
       onClick={onClick}
     >
