@@ -23,9 +23,12 @@ export const getSignedUrlForUpload: PersistenceGetSignedUrlForUpload = async ({
   });
 
   const command = new PutObjectCommand({
+    ACL: "public-read",
     Bucket: process.env.S3_BUCKET_NAME,
     Key: filename,
+    StorageClass: "INTELLIGENT_TIERING",
   });
+
   const url = await getSignedUrl(client, command, { expiresIn: 60 });
 
   return { url };
