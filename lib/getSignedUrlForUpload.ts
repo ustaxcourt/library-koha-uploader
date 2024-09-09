@@ -1,5 +1,6 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { DocType } from "@/types/DocType";
 
 export type PersistenceGetSignedUrlForUploadResult = {
   url: string;
@@ -7,13 +8,24 @@ export type PersistenceGetSignedUrlForUploadResult = {
 
 export type PersistenceGetSignedUrlForUpload = ({
   filename,
+  folderName,
+  docType
 }: {
   filename: string;
+  folderName?: string;
+  docType: DocType;
+
 }) => Promise<PersistenceGetSignedUrlForUploadResult>;
 
 export const getSignedUrlForUpload: PersistenceGetSignedUrlForUpload = async ({
   filename,
+  folderName,
+  docType
 }) => {
+
+  const Key = docType === "JCT" ? `${folderName}/${filename}` : filename;
+  const Bucket = docType === "JCT" ? process.env.S3_BUCKET_JCT : process.env.S3_BUCKET_HEARINGS;
+
   const client = new S3Client({
     region: "us-east-1",
     credentials: {
@@ -24,8 +36,8 @@ export const getSignedUrlForUpload: PersistenceGetSignedUrlForUpload = async ({
 
   const command = new PutObjectCommand({
     ACL: "public-read",
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: filename,
+    Bucket,
+    Key,
     StorageClass: "INTELLIGENT_TIERING",
   });
 
