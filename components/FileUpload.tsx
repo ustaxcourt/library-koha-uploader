@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -43,7 +45,6 @@ export default function FileUpload({
   const [errors, setErrors] = useState("");
   const [selectedFiles, setSelectedFiles] = useState(value);
   useEffect(() => {
-    console.log(value);
     setSelectedFiles(value);
   }, [value]);
 
