@@ -7,6 +7,7 @@ import { MouseEventHandler, useEffect, useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { startUpload } from "@/app/actions";
 import { DocType } from "@/types/DocType";
+import { getFilename } from "@/lib/getFilename";
 
 export default function Component() {
   const { data: session } = useSession();
@@ -81,14 +82,16 @@ const UploadForm = () => {
   }, [files.value, kohaNumber.value]);
 
   useEffect(() => {
-    const docUrl = docType === "JCT" ?
-      `${process.env.NEXT_PUBLIC_S3_JCT_URL_PREFIX}/${foldername}/${filename}`
-      : `${process.env.NEXT_PUBLIC_S3_HEARINGS_URL_PREFIX}/${filename}`
+    const fn = getFilename({ filename, docType, folderName: foldername });
+
+    const docUrlBase = docType === "JCT"
+      ? process.env.NEXT_PUBLIC_S3_JCT_URL_PREFIX
+      : process.env.NEXT_PUBLIC_S3_HEARINGS_URL_PREFIX;
 
     setUrl(
-      docUrl
+      `${docUrlBase}/${fn}`
     );
-  }, [filename, foldername]);
+  }, [filename, foldername, docType]);
 
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
