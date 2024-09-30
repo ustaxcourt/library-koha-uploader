@@ -21,7 +21,7 @@ export default function Component() {
   return (
     <div>
       {session?.user?.email &&
-        usersWhoCanLogin.includes(session.user.email.toLowerCase()) ? (
+      usersWhoCanLogin.includes(session.user.email.toLowerCase()) ? (
         <div>
           <UploadForm />
         </div>
@@ -44,6 +44,7 @@ const UploadForm = () => {
   const [isDisabled, setDisabled] = useState(true);
   const [url, setUrl] = useState("");
   const [docType, setDocType] = useState<DocType>("JCT");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const fixFilename = (fn: string) => {
     const [basename, extension] = fn.split(".");
@@ -51,18 +52,39 @@ const UploadForm = () => {
     return [newBasename, extension].join(".");
   };
 
+  const restart = () => {
+    setUrl("");
+    setIsUploadComplete(false);
+    setErrorMessage("");
+    setFilename("");
+    setFoldername("");
+    setDocType("JCT");
+    files.removeFiles();
+    kohaNumber.setValue("");
+  };
+
   const uploadFile = () => {
     initUpload(async () => {
-
-      const url = await startUpload({ docType, filename, folderName: foldername });
-
-      await fetch(url, {
-        method: "PUT",
-        mode: "cors",
-        body: files.value[0],
+      const { url, error } = await startUpload({
+        docType,
+        filename,
+        folderName: foldername,
       });
 
-      setIsUploadComplete(true);
+      console.log({ url, error });
+      if (url) {
+        await fetch(url, {
+          method: "PUT",
+          mode: "cors",
+          body: files.value[0],
+        });
+
+        setIsUploadComplete(true);
+        setErrorMessage("");
+      } else {
+        console.error(error);
+        setErrorMessage(error || "An unknown error has occurred");
+      }
     });
   };
 
@@ -84,13 +106,12 @@ const UploadForm = () => {
   useEffect(() => {
     const fn = getFilename({ filename, docType, folderName: foldername });
 
-    const docUrlBase = docType === "JCT"
-      ? process.env.NEXT_PUBLIC_S3_JCT_URL_PREFIX
-      : process.env.NEXT_PUBLIC_S3_HEARINGS_URL_PREFIX;
+    const docUrlBase =
+      docType === "JCT"
+        ? process.env.NEXT_PUBLIC_S3_JCT_URL_PREFIX
+        : process.env.NEXT_PUBLIC_S3_HEARINGS_URL_PREFIX;
 
-    setUrl(
-      `${docUrlBase}/${fn}`
-    );
+    setUrl(`${docUrlBase}/${fn}`);
   }, [filename, foldername, docType]);
 
   const [copied, setCopied] = useState(false);
@@ -113,11 +134,18 @@ const UploadForm = () => {
         <div className="flex flex-col gap-2">
           <label>Type</label>
           <div className="flex flex-row gap-2">
-            <button className={`btn ${docType === "JCT" ? "btn-blue" : "btn-disabled"}`} onClick={() => setDocType("JCT")}>
+            <button
+              className={`btn ${
+                docType === "JCT" ? "btn-blue" : "btn-disabled"
+              }`}
+              onClick={() => setDocType("JCT")}
+            >
               JCT
             </button>
             <button
-              className={`btn ${docType === "Hearing" ? "btn-blue" : "btn-disabled"}`}
+              className={`btn ${
+                docType === "Hearing" ? "btn-blue" : "btn-disabled"
+              }`}
               onClick={() => setDocType("Hearing")}
             >
               Hearings
@@ -163,10 +191,17 @@ const UploadForm = () => {
                   readOnly
                   value={url}
                 />
-                <div>
-                  <button onClick={handleCopy} className="btn btn-blue">
-                    {copied ? "copied!" : "copy"}
-                  </button>
+                <div className="flex flex-row gap-2 justify-between">
+                  <div>
+                    <button onClick={handleCopy} className="btn btn-blue">
+                      {copied ? "copied!" : "copy"}
+                    </button>
+                  </div>
+                  <div className="">
+                    <button onClick={() => restart()} className="btn btn-blue">
+                      upload another
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -176,6 +211,11 @@ const UploadForm = () => {
               onClick={uploadFile}
             />
           )}
+        </div>
+        <div>
+          {errorMessage ? (
+            <p className="text-red-500">ERROR: {errorMessage}</p>
+          ) : null}
         </div>
       </div>
     </div>
@@ -191,10 +231,11 @@ const Upload = ({
 }) => {
   return (
     <button
-      className={`btn ${isDisabled
-        ? "btn-disabled cursor-not-allowed"
-        : "btn-blue cursor-pointer"
-        }`}
+      className={`btn ${
+        isDisabled
+          ? "btn-disabled cursor-not-allowed"
+          : "btn-blue cursor-pointer"
+      }`}
       disabled={isDisabled}
       onClick={onClick}
     >
