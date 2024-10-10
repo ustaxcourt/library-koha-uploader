@@ -88,7 +88,7 @@ const createSignedUrl = async ({
   Key: string;
 }) => {
   const command = new PutObjectCommand({
-    ACL: "public-read",
+    ACL: "bucket-owner-full-control",
     Bucket,
     Key,
     StorageClass: "INTELLIGENT_TIERING",
