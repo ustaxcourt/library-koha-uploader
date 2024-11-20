@@ -16,6 +16,7 @@ export default function Component() {
     "michael.marcotte@ustaxcourt.gov",
     "allison.tyous@ustaxcourt.gov",
     "erin.fernandes@ustaxcourt.gov",
+    "virginia.nelson@ustaxcourt.gov",
   ];
 
   return (
