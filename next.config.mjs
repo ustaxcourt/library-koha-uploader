@@ -1,9 +1,9 @@
 import {withSentryConfig} from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', '@aws-sdk/middleware-sdk-s3'],
-  }
+  // experimental: {
+  //   serverComponentsExternalPackages: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner', '@aws-sdk/middleware-sdk-s3'],
+  // }
 };
 
 export default withSentryConfig(nextConfig, {
