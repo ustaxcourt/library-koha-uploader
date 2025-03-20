@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { Button } from "./Button";
 
 export default function Component() {
   const { data: session } = useSession();
@@ -30,18 +31,14 @@ export default function Component() {
         </div>
 
         <div>
-          <button className="btn btn-blue" onClick={() => signOut()}>
-            Sign out
-          </button>
+          <Button onClick={() => signOut()}>Sign out</Button>
         </div>
       </div>
     );
   }
   return (
     <>
-      <button className="btn btn-blue" onClick={() => signIn()}>
-        Sign in
-      </button>
+      <Button onClick={() => signIn()}>Sign in</Button>
     </>
   );
 }
