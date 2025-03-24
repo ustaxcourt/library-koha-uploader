@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { startUpload } from "@/app/actions";
 import { DocType } from "@/types/DocType";
 import { getFilename } from "@/lib/getFilename";
+import { Button } from "./Button";
 
 export default function Component() {
   const { data: session } = useSession();
@@ -17,6 +18,7 @@ export default function Component() {
     "allison.tyous@ustaxcourt.gov",
     "erin.fernandes@ustaxcourt.gov",
     "virginia.nelson@ustaxcourt.gov",
+    "ustc.bookeye@ustaxcourt.gov",
   ];
 
   return (
@@ -130,34 +132,35 @@ const UploadForm = () => {
         </div>
         <div className="flex flex-col gap-2">
           <label>KOHA Number</label>
-          <input className="text-slate-800 p-2" type="text" {...kohaNumber} />
+          <input
+            className="text-slate-800 p-2 bg-white"
+            type="text"
+            value={kohaNumber.value}
+            onChange={kohaNumber.onChange}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <label>Type</label>
           <div className="flex flex-row gap-2">
-            <button
-              className={`btn ${
-                docType === "JCT" ? "btn-blue" : "btn-disabled"
-              }`}
+            <Button
               onClick={() => setDocType("JCT")}
+              isActive={docType === "JCT"}
             >
               JCT
-            </button>
-            <button
-              className={`btn ${
-                docType === "Hearing" ? "btn-blue" : "btn-disabled"
-              }`}
+            </Button>
+            <Button
+              isActive={docType === "Hearing"}
               onClick={() => setDocType("Hearing")}
             >
               Hearings
-            </button>
+            </Button>
           </div>
         </div>
         {docType === "JCT" && (
           <div className="flex flex-col gap-2">
             <label>Folder Name</label>
             <input
-              className="text-slate-800 p-2 max-w-5xl w-full"
+              className="text-slate-800 p-2 max-w-5xl w-full disabled:bg-gray-400 disabled:cursor-not-allowed bg-white"
               type="text"
               value={foldername}
               disabled={isDisabled}
@@ -168,7 +171,7 @@ const UploadForm = () => {
         <div className="flex flex-col gap-2">
           <label>Filename</label>
           <input
-            className={`text-slate-800 p-2 max-w-5xl w-full`}
+            className={`text-slate-800 p-2 max-w-5xl w-full disabled:bg-gray-400 disabled:cursor-not-allowed bg-white`}
             type="text"
             readOnly
             disabled={isDisabled}
@@ -187,30 +190,30 @@ const UploadForm = () => {
               <div className="flex flex-col gap-2">
                 <label>URL</label>
                 <input
-                  className={`text-slate-800 p-2 max-w-5xl w-full`}
+                  className={`text-slate-800 p-2 max-w-5xl w-full bg-white`}
                   type="text"
                   readOnly
                   value={url}
                 />
                 <div className="flex flex-row gap-2 justify-between">
                   <div>
-                    <button onClick={handleCopy} className="btn btn-blue">
+                    <Button onClick={handleCopy}>
                       {copied ? "copied!" : "copy"}
-                    </button>
+                    </Button>
                   </div>
                   <div className="">
-                    <button onClick={() => restart()} className="btn btn-blue">
-                      upload another
-                    </button>
+                    <Button onClick={() => restart()}>upload another</Button>
                   </div>
                 </div>
               </div>
             </div>
           ) : (
-            <Upload
+            <Button
               isDisabled={uploadStarted || isDisabled}
               onClick={uploadFile}
-            />
+            >
+              Upload
+            </Button>
           )}
         </div>
         <div>
@@ -220,27 +223,5 @@ const UploadForm = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-const Upload = ({
-  isDisabled,
-  onClick,
-}: {
-  isDisabled: boolean;
-  onClick: MouseEventHandler<HTMLButtonElement>;
-}) => {
-  return (
-    <button
-      className={`btn ${
-        isDisabled
-          ? "btn-disabled cursor-not-allowed"
-          : "btn-blue cursor-pointer"
-      }`}
-      disabled={isDisabled}
-      onClick={onClick}
-    >
-      Upload
-    </button>
   );
 };
