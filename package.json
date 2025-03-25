@@ -9,23 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.758.0",
-    "@aws-sdk/s3-request-presigner": "^3.758.0",
-    "@sentry/nextjs": "^9.7.0",
-    "@tailwindcss/postcss": "^4.0.14",
+    "@aws-sdk/client-s3": "^3.774.0",
+    "@aws-sdk/s3-request-presigner": "^3.774.0",
+    "@sentry/nextjs": "^9.9.0",
+    "@tailwindcss/postcss": "^4.0.16",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "jest": "^29.7.0",
-    "next": "15.2.3",
+    "next": "15.2.4",
     "next-auth": "^4.24.11",
     "react": "^19",
     "react-dom": "^19",
     "react-dropzone": "^14.3.8",
     "eslint": "^9",
-    "eslint-config-next": "15.2.3",
+    "eslint-config-next": "15.2.4",
     "postcss": "^8",
-    "tailwindcss": "^4.0.14",
+    "tailwindcss": "^4.0.16",
     "typescript": "^5"
   }
 }
