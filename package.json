@@ -21,7 +21,7 @@
     "next-auth": "^4.24.11",
     "react": "^19",
     "react-dom": "^19",
-    "react-dropzone": "^14.3.8",
+    "react-dropzone": "^20.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.8",
     "postcss": "^8",
